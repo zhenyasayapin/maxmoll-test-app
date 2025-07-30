@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: maxmoll-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html
+
+  php:
+    build:
+      dockerfile: ./docker/php/Dockerfile
+    container_name: maxmoll-php
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      DATABASE_URL: "pgsql://app:app@db:5432/app"
+
+#  db:
+#    image: postgres:15
+#    container_name: maxmoll-db
+#    environment:
+#      POSTGRES_DB: app
+#      POSTGRES_USER: app
+#      POSTGRES_PASSWORD: app
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ./db_data:/var/lib/postgresql/data
