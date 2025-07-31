@@ -20,14 +20,14 @@ services:
     environment:
       DATABASE_URL: "pgsql://app:app@db:5432/app"
 
-#  db:
-#    image: postgres:15
-#    container_name: maxmoll-db
-#    environment:
-#      POSTGRES_DB: app
-#      POSTGRES_USER: app
-#      POSTGRES_PASSWORD: app
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - ./db_data:/var/lib/postgresql/data
+  db:
+    image: postgres:15
+    container_name: maxmoll-db
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
