@@ -5,22 +5,37 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource(operations: [new GetCollection()])]
+#[ApiResource(
+    operations: [new GetCollection()],
+)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['stock:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['stock:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['stock:read'])]
     private ?float $price = null;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Stock::class)]
+    private Collection $stocks;
+
+    public function __construct()
+    {
+        $this->stocks = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -54,5 +69,10 @@ class Product
         $this->price = $price;
 
         return $this;
+    }
+
+    public function getStocks(): Collection
+    {
+        return $this->stocks;
     }
 }

@@ -25,3 +25,7 @@ phpunit-prepare:
 	@docker compose exec ${PHP_SERVICE} symfony console d:m:m --no-interaction --env=test
 fixtures:
 	@docker compose exec ${PHP_SERVICE} symfony console d:f:l --no-interaction
+migrate:
+	@docker compose exec ${PHP_SERVICE} symfony console d:m:m --no-interaction
+migrate-prev:
+	@docker compose exec ${PHP_SERVICE} symfony console d:m:m prev --no-interaction
