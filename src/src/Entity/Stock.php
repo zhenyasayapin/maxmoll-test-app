@@ -18,7 +18,7 @@ class Stock
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['stock:read'])]
+    #[Groups(['stock:read', 'product:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
@@ -28,11 +28,11 @@ class Stock
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['stock:read'])]
+    #[Groups(['stock:read', 'product:read'])]
     private ?Warehouse $warehouse = null;
 
     #[ORM\Column]
-    #[Groups(['stock:read'])]
+    #[Groups(['stock:read', 'product:read'])]
     private ?int $stock = null;
 
     public function getId(): ?int

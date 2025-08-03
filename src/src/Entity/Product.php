@@ -12,24 +12,26 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
     operations: [new GetCollection()],
+    normalizationContext: ['groups' => ['product:read']],
 )]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['stock:read'])]
+    #[Groups(['stock:read', 'product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['stock:read'])]
+    #[Groups(['stock:read', 'product:read'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['stock:read'])]
+    #[Groups(['stock:read', 'product:read'])]
     private ?float $price = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Stock::class)]
+    #[Groups(['stock:read', 'product:read'])]
     private Collection $stocks;
 
     public function __construct()
@@ -74,5 +76,10 @@ class Product
     public function getStocks(): Collection
     {
         return $this->stocks;
+    }
+
+    public function setStocks(Collection $stocks): void
+    {
+        $this->stocks = $stocks;
     }
 }

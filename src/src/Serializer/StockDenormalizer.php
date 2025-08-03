@@ -19,10 +19,14 @@ class StockDenormalizer implements DenormalizerInterface
         $stock = new Stock();
 
         $stock->setId($data['id']);
-        $stock->setProduct($serializer->denormalize(
-            $data['product'],
-            Product::class
-        ));
+
+        if (isset($data['product'])) {
+            $stock->setProduct($serializer->denormalize(
+                $data['product'],
+                Product::class
+            ));
+        }
+
         $stock->setWarehouse($serializer->denormalize(
             $data['warehouse'],
             Warehouse::class
