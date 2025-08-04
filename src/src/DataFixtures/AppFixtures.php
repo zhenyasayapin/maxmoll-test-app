@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Factory\OrderFactory;
 use App\Factory\ProductFactory;
 use App\Factory\StockFactory;
 use App\Factory\WarehouseFactory;
@@ -18,6 +19,12 @@ class AppFixtures extends Fixture
         StockFactory::createMany(10, function () {
             return [
                 'product' => ProductFactory::random(),
+                'warehouse' => WarehouseFactory::random(),
+            ];
+        });
+
+        OrderFactory::createMany(10, function () {
+            return [
                 'warehouse' => WarehouseFactory::random(),
             ];
         });

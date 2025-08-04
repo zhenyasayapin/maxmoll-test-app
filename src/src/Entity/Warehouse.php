@@ -15,11 +15,11 @@ class Warehouse
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['stock:read', 'product:read'])]
+    #[Groups(['stock:read', 'product:read', 'order:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['stock:read', 'product:read'])]
+    #[Groups(['stock:read', 'product:read', 'order:read'])]
     private ?string $name = null;
 
     public function setId(?int $id): void
