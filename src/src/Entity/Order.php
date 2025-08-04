@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\OrderRepository;
@@ -14,6 +16,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [new GetCollection()],
     normalizationContext: ['groups' => ['order:read']],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
 class Order
 {
     #[ORM\Id]
