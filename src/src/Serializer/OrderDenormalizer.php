@@ -2,6 +2,7 @@
 
 namespace App\Serializer;
 
+use ApiPlatform\Metadata\IriConverterInterface;
 use App\Entity\Order;
 use App\Entity\Warehouse;
 use App\Enum\OrderStatusEnum;
@@ -10,6 +11,11 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class OrderDenormalizer implements DenormalizerInterface
 {
+    public function __construct(
+        private readonly IriConverterInterface $iriConverter,
+    )
+    {}
+
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
         $order = new Order();
@@ -21,9 +27,12 @@ class OrderDenormalizer implements DenormalizerInterface
         $order->setStatus($data['status'] ? OrderStatusEnum::tryFrom($data['status'])?->value : null);
 
         if (isset($data['warehouse'])) {
-            $order->setWarehouse(
-                (new ObjectNormalizer())->denormalize($data['warehouse'], Warehouse::class)
-            );
+            $warehouse = match (true) {
+                is_string($data['warehouse']) => $this->iriConverter->getResourceFromIri($data['warehouse']),
+                default => (new ObjectNormalizer())->denormalize($data['warehouse'], Warehouse::class)
+            };
+
+            $order->setWarehouse($warehouse);
         }
 
         return $order;

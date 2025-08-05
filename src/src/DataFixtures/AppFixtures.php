@@ -23,7 +23,7 @@ class AppFixtures extends Fixture
             ];
         });
 
-        OrderFactory::createMany(10, function () {
+        OrderFactory::createMany(100, function () {
             return [
                 'warehouse' => WarehouseFactory::random(),
             ];
