@@ -26,10 +26,14 @@ class OrderTest extends ApiTestCase
     {
         OrderFactory::createMany(10);
 
-        $response = static::createClient()->request('GET', '/api/orders');
+        $client = static::createClient();
+        $response = $client->request('GET', '/api/orders');
+
+        /** @var IriConverterInterface $iriConverter */
+        $iriConverter = $client->getContainer()->get('api_platform.iri_converter');
 
         $serializer = new Serializer([
-            new OrderDenormalizer(),
+            new OrderDenormalizer($iriConverter),
             new ArrayDenormalizer(),
         ]);
 
@@ -64,10 +68,14 @@ class OrderTest extends ApiTestCase
             ];
         });
 
-        $response = static::createClient()->request('GET', '/api/orders?status=active');
+        $client = static::createClient();
+        $response = $client->request('GET', '/api/orders?status=active');
+
+        /** @var IriConverterInterface $iriConverter */
+        $iriConverter = $client->getContainer()->get('api_platform.iri_converter');
 
         $serializer = new Serializer([
-            new OrderDenormalizer(),
+            new OrderDenormalizer($iriConverter),
             new ArrayDenormalizer(),
         ]);
 

@@ -29,3 +29,6 @@ migrate:
 	@docker compose exec ${PHP_SERVICE} symfony console d:m:m --no-interaction
 migrate-prev:
 	@docker compose exec ${PHP_SERVICE} symfony console d:m:m prev --no-interaction
+phpunit:
+	$(MAKE) phpunit-prepare
+	@docker compose exec ${PHP_SERVICE} vendor/bin/phpunit $(ARGS)
