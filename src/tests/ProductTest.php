@@ -5,6 +5,7 @@ namespace App\Tests;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Product;
 use App\Factory\ProductFactory;
+use App\Serializer\ProductDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -28,7 +29,7 @@ class ProductTest extends ApiTestCase
         $products = json_decode($response->getContent(), true)['member'] ?? [];
 
         $serializer = new Serializer(
-            [new ArrayDenormalizer(), new ObjectNormalizer()],
+            [new ArrayDenormalizer(), new ProductDenormalizer()],
         );
 
         $serializedProducts = $serializer->denormalize(
