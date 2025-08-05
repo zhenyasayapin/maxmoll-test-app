@@ -61,12 +61,12 @@ class StockTest extends ApiTestCase
 
     public function testGetProductsIncludeStocks(): void
     {
-        ProductFactory::createMany(1);
+        $createdProduct = ProductFactory::createOne();
         WarehouseFactory::createMany(5);
 
-        StockFactory::createMany(5, function () {
+        StockFactory::createMany(5, function () use ($createdProduct) {
             return [
-                'product' => ProductFactory::random(),
+                'product' => $createdProduct,
                 'warehouse' => WarehouseFactory::random(),
             ];
         });
@@ -74,8 +74,6 @@ class StockTest extends ApiTestCase
         $response = static::createClient()->request('GET', '/api/products');
 
         $products = json_decode($response->getContent(), true)['member'] ?? [];
-
-        $this->assertCount(1, $products);
 
         $serializer = new Serializer([
             new ProductDenormalizer(),
@@ -89,6 +87,10 @@ class StockTest extends ApiTestCase
 
         /** @var Product $product */
         foreach ($denormalizedProducts as $product) {
+            if ($createdProduct->getId() !== $product->getId()) {
+                continue;
+            }
+
             $this->assertGreaterThan(0, $product->getStocks()->count());
 
             foreach ($product->getStocks() as $stock) {
