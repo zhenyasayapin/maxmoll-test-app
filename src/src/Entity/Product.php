@@ -31,7 +31,7 @@ class Product
     private ?float $price = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Stock::class)]
-    #[Groups(['stock:read', 'product:read'])]
+    #[Groups(['product:read'])]
     private Collection $stocks;
 
     public function __construct()
