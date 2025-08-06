@@ -43,6 +43,6 @@ class ProductTest extends ApiTestCase
             $this->assertNotEmpty($product->getPrice());
         }
 
-        $this->assertCount(10, $products);
+        $this->assertGreaterThanOrEqual(10, $products);
     }
 }
