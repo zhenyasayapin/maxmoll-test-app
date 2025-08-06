@@ -5,16 +5,19 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
 #[ApiResource(
-    operations: [new GetCollection(), new Post()],
+    operations: [new GetCollection(), new Post(), new Get()],
     normalizationContext: ['groups' => ['order:read']],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
@@ -46,6 +49,18 @@ class Order
     #[ORM\Column(length: 255)]
     #[Groups('order:read')]
     private ?string $status = null;
+
+
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
+    #[Groups('order:read')]
+    private Collection $items;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
+
+
 
     public function getId(): ?int
     {
@@ -113,6 +128,36 @@ class Order
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderItem>
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function addItem(OrderItem $item): static
+    {
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setOrder2($this);
+        }
+
+        return $this;
+    }
+
+    public function removeItem(OrderItem $item): static
+    {
+        if ($this->items->removeElement($item)) {
+            // set the owning side to null (unless already changed)
+            if ($item->getOrder2() === $this) {
+                $item->setOrder2(null);
+            }
+        }
 
         return $this;
     }

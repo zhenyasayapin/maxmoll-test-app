@@ -7,6 +7,7 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Order;
 use App\Enum\OrderStatusEnum;
 use App\Factory\OrderFactory;
+use App\Factory\ProductFactory;
 use App\Factory\WarehouseFactory;
 use App\Serializer\OrderDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -121,5 +122,32 @@ class OrderTest extends ApiTestCase
         $this->assertNotEmpty($order->getCustomer());
         $this->assertNotEmpty($order->getWarehouse());
         $this->assertNotEmpty($order->getCreatedAt());
+    }
+
+    public function testAddItemToOrder(): void
+    {
+        $order = OrderFactory::createOne();
+        $product = ProductFactory::createOne();
+
+        $client = static::createClient();
+
+        $response = $client->request('POST', '/api/orders/' . $order->getId() . '/items', [
+            'headers' => [
+                'Content-Type' => 'application/ld+json',
+            ],
+            'body' => json_encode([
+                'product' => '/api/products/' . $product->getId(),
+                'count' => 2,
+            ]),
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $repository = $client->getContainer()->get('doctrine')->getRepository(Order::class);
+        $updatedOrder = $repository->find($order->getId());
+        $this->assertNotEmpty($updatedOrder);
+        $this->assertCount(1, $updatedOrder->getItems());
+        $this->assertEquals($product->getId(), $updatedOrder->getItems()[0]->getProduct()->getId());
+        $this->assertEquals(2, $updatedOrder->getItems()[0]->getCount());
     }
 }
