@@ -18,13 +18,26 @@ class OrderDenormalizer implements DenormalizerInterface
 
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
     {
-        $order = new Order();
+        $order = $context['object_to_populate'] ?? new Order();
 
-        $order->setId($data['id'] ?? null);
-        $order->setCustomer($data['customer'] ?? null);
-        $order->setCreatedAt(new \DateTimeImmutable($data['createdAt'] ?? null));
-        $order->setCompletedAt(new \DateTimeImmutable($data['completedAt'] ?? null));
-        $order->setStatus($data['status'] ? OrderStatusEnum::tryFrom($data['status'])?->value : null);
+        if (isset($data['id'])) {
+            $order->setId($data['id']);
+        }
+
+        if (isset($data['customer'])) {
+            $order->setCustomer($data['customer']);
+        }
+
+        if (isset($data['createdAt'])) {
+            $order->setCreatedAt(new \DateTimeImmutable($data['createdAt']));
+        }
+        if (isset($data['completedAt'])) {
+            $order->setCompletedAt(new \DateTimeImmutable($data['completedAt']));
+        }
+
+        if (isset($data['status'])) {
+            $order->setStatus(OrderStatusEnum::tryFrom($data['status'])?->value);
+        }
 
         if (isset($data['warehouse'])) {
             $warehouse = match (true) {

@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,7 +18,12 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
 #[ApiResource(
-    operations: [new GetCollection(), new Post(), new Get()],
+    operations: [
+        new GetCollection(),
+        new Post(),
+        new Get(),
+        new Patch()
+    ],
     normalizationContext: ['groups' => ['order:read']],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
@@ -37,7 +43,7 @@ class Order
     #[Groups('order:read')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups('order:read')]
     private ?\DateTimeImmutable $completedAt = null;
 
@@ -58,9 +64,8 @@ class Order
     public function __construct()
     {
         $this->items = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
-
-
 
     public function getId(): ?int
     {

@@ -150,4 +150,27 @@ class OrderTest extends ApiTestCase
         $this->assertEquals($product->getId(), $updatedOrder->getItems()[0]->getProduct()->getId());
         $this->assertEquals(2, $updatedOrder->getItems()[0]->getCount());
     }
+
+    public function testUpdateOrderStatus(): void
+    {
+        $order = OrderFactory::createOne(['status' => OrderStatusEnum::ACTIVE->value]);
+
+        $client = static::createClient();
+
+        $response = $client->request('PATCH', '/api/orders/' . $order->getId(), [
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'body' => json_encode([
+                'status' => OrderStatusEnum::CANCELLED->value,
+            ]),
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $repository = $client->getContainer()->get('doctrine')->getRepository(Order::class);
+        $updatedOrder = $repository->find($order->getId());
+        $this->assertNotEmpty($updatedOrder);
+        $this->assertEquals(OrderStatusEnum::CANCELLED->value, $updatedOrder->getStatus());
+    }
 }
