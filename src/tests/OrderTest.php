@@ -7,6 +7,7 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Order;
 use App\Enum\OrderStatusEnum;
 use App\Factory\OrderFactory;
+use App\Factory\OrderItemFactory;
 use App\Factory\ProductFactory;
 use App\Factory\WarehouseFactory;
 use App\Serializer\OrderDenormalizer;
@@ -172,5 +173,37 @@ class OrderTest extends ApiTestCase
         $updatedOrder = $repository->find($order->getId());
         $this->assertNotEmpty($updatedOrder);
         $this->assertEquals(OrderStatusEnum::CANCELLED->value, $updatedOrder->getStatus());
+    }
+
+    public function testUpdateOrderItem(): void
+    {
+        $order = OrderFactory::createOne();
+        $product = ProductFactory::createOne();
+        $newProduct = ProductFactory::createOne();
+        $orderItem = OrderItemFactory::createOne([
+            'order' => $order,
+            'product' => $product,
+            'count' => 1,
+        ]);
+
+        $client = static::createClient();
+        $response = $client->request('PATCH', '/api/orders/' . $order->getId() . '/items/' . $orderItem->getId(), [
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json',
+            ],
+            'body' => json_encode([
+                'count' => 3,
+                'product' => '/api/products/' . $newProduct->getId(),
+            ]),
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $repository = $client->getContainer()->get('doctrine')->getRepository(Order::class);
+        $updatedOrder = $repository->find($order->getId());
+        $this->assertNotEmpty($updatedOrder);
+        $this->assertCount(1, $updatedOrder->getItems());
+        $this->assertEquals(3, $updatedOrder->getItems()[0]->getCount());
+        $this->assertEquals($newProduct->getId(), $updatedOrder->getItems()[0]->getProduct()->getId());
     }
 }

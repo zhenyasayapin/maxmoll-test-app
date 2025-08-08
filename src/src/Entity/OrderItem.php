@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\OrderItemCreateController;
+use App\Controller\OrderItemUpdateController;
 use App\Repository\OrderItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -16,6 +18,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
             uriTemplate: '/orders/{orderId}/items',
             controller: OrderItemCreateController::class
         ),
+        new Patch(
+            uriTemplate: '/orders/{orderId}/items/{id}',
+            controller: OrderItemUpdateController::class,
+        )
     ])
 ]
 class OrderItem

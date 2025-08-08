@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Factory\OrderFactory;
+use App\Factory\OrderItemFactory;
 use App\Factory\ProductFactory;
 use App\Factory\StockFactory;
 use App\Factory\WarehouseFactory;
@@ -26,6 +27,13 @@ class AppFixtures extends Fixture
         OrderFactory::createMany(100, function () {
             return [
                 'warehouse' => WarehouseFactory::random(),
+            ];
+        });
+
+        OrderItemFactory::createMany(30, function () {
+            return [
+                'order' => OrderFactory::random(),
+                'product' => ProductFactory::random(),
             ];
         });
 
